@@ -13,6 +13,7 @@ Run __contact_application__ with python virtual environment
     - python3.8
     - venv
     - psycopg2
+    - postgresql
 
 * Create a virtual environment
 ```bash
