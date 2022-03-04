@@ -1,5 +1,7 @@
+# util
 import uuid
 
+# django
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -10,17 +12,20 @@ from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, username, password=None, **extra_fields):
+    """
+        Custom User manager class
+    """
+    def create_user(self, email, secret_code, password=None, **extra_fields):
         if not email:
             raise ValueError("User must have an email")
         email = self.normalize_email(email)
-        user = self.model(email=email, username=username, **extra_fields)
+        user = self.model(email=email, secret_code=secret_code, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, password=None, **extra_fields):
-        user = self.create_user(username, email, password=password, **extra_fields)
+    def create_superuser(self, email, password=None, **extra_fields):
+        user = self.create_user(email=email, password=password, **extra_fields)
         user.is_active = True
         user.is_staff = True
         user.is_admin = True
@@ -29,6 +34,10 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    """
+        Custom User DB model extended from Abstract django user class
+        with custom registration and login functionality
+    """
     uid = models.CharField(
         unique=True,
         default=uuid.uuid1,
@@ -78,7 +87,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = [
-        "code",
+        "secret_code",
     ]
 
     def get_short_name(self):

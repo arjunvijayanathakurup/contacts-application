@@ -51,10 +51,12 @@ THIRD_PARTY_APPS = [
     'djoser',
     'corsheaders',
     'rest_framework_simplejwt',
+    'phonenumber_field',
 ]
 
 PROJECT_APPS = [
-    'user'
+    'user',
+    'contact',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -74,9 +76,9 @@ ROOT_URLCONF = 'config.urls'
 
 # Django DRF config
 REST_FRAMEWORK = {
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     # 'rest_framework.permissions.IsAuthenticated',
-    # ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -84,10 +86,14 @@ REST_FRAMEWORK = {
 
 # Simple JWT config
 SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
+    'USER_ID_FIELD': 'uid',
     'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
 }
 
 DJOSER = {
@@ -95,7 +101,8 @@ DJOSER = {
     'USERNAME_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
     'PASSWORD_RESET_CONFIRM_URL': 'email/reset/confirm/{uid}/{token}',
     "SERIALIZERS": {
-        "user_create": "user.serializers.UserCreateSerializer",  # custom serializer
+        'user_registration': 'user.serializers.UserCreateSerializer',  # custom serializer
+        'login': 'djoser.serializers.LoginSerializer',
         "user": "djoser.serializers.UserSerializer",
         "current_user": "djoser.serializers.UserSerializer",
         "user_delete": "djoser.serializers.UserSerializer",
@@ -194,3 +201,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
+PHONENUMBER_DEFAULT_FORMAT = "INTERNATIONAL"
